@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lead Intelligence — Ace Digitals Global</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --ink:   #0e0f14;
+  --ink2:  #181922;
+  --ink3:  #21222e;
+  --fire:  #e94560;
+  --gold:  #f5a623;
+  --line:  rgba(255,255,255,0.07);
+  --fog:   #6b7280;
+  --snow:  #eef0f6;
+  --green: #10b981;
+  --r:     10px;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:var(--ink);color:var(--snow);min-height:100vh;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:44px 44px}
+
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;
+  border-bottom:1px solid var(--line);background:rgba(14,15,20,.94);backdrop-filter:blur(14px);
+  position:sticky;top:0;z-index:50}
+.brand{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#fff}
+.brand span{color:var(--fire)}
+.pill{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--fog);
+  border:1px solid var(--line);padding:5px 14px;border-radius:99px}
+
+.hero{padding:60px 28px 44px;text-align:center;max-width:680px;margin:0 auto}
+.hero-tag{font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--fire);margin-bottom:14px}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,8vw,68px);letter-spacing:2px;
+  line-height:.97;color:#fff;margin-bottom:16px}
+.hero h1 em{font-style:normal;-webkit-text-stroke:1px var(--fire);color:transparent}
+.hero p{font-size:15px;color:var(--fog);line-height:1.65;max-width:460px;margin:0 auto}
+
+.wrap{padding:0 16px}
+
+.search-card{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);
+  padding:26px;max-width:760px;margin:0 auto 36px;
+  display:grid;grid-template-columns:1fr 1fr auto;gap:14px;align-items:end}
+@media(max-width:580px){.search-card{grid-template-columns:1fr}}
+
+.fg{display:flex;flex-direction:column;gap:6px}
+.fg label{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--fog)}
+input[type=text]{background:var(--ink3);border:1px solid var(--line);border-radius:8px;color:#fff;
+  font-family:'Barlow',sans-serif;font-size:15px;padding:13px 16px;outline:none;transition:border-color .18s;width:100%}
+input[type=text]::placeholder{color:#3d3f52}
+input[type=text]:focus{border-color:var(--fire)}
+
+.btn-go{background:linear-gradient(135deg,var(--fire),var(--gold));color:#fff;border:none;
+  border-radius:8px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1.5px;
+  padding:13px 30px;cursor:pointer;transition:opacity .18s,transform .1s;white-space:nowrap}
+.btn-go:hover{opacity:.88}
+.btn-go:active{transform:scale(.97)}
+.btn-go:disabled{opacity:.4;cursor:not-allowed}
+
+.prog-wrap{height:2px;background:var(--line);max-width:760px;margin:0 auto 10px;border-radius:2px;overflow:hidden}
+.prog{height:100%;width:0;background:linear-gradient(90deg,var(--fire),var(--gold));transition:width .3s}
+.prog.run{width:40%;animation:slide 1.1s infinite ease-in-out}
+@keyframes slide{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+#msg{text-align:center;font-size:12px;color:var(--fog);margin-bottom:26px;min-height:18px;font-style:italic}
+#msg.on{color:var(--gold)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  max-width:760px;margin:0 auto 30px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+@media(max-width:580px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--ink2);padding:18px;text-align:center}
+.stat-v{font-family:'Bebas Neue',sans-serif;font-size:34px;color:#fff;line-height:1}
+.stat-v.f{color:var(--fire)}
+.stat-l{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--fog);margin-top:4px}
+
+.sec{max-width:760px;margin:0 auto 56px}
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px}
+.sec-ct{font-size:12px;color:var(--fog)}
+
+.tbl-shell{background:var(--ink2);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.empty{padding:65px 20px;text-align:center;color:var(--fog)}
+.ei{font-size:40px;margin-bottom:12px;opacity:.3}
+.et{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;color:#444;margin-bottom:5px}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--ink3);padding:10px 14px;text-align:left;font-size:9px;font-weight:700;
+  letter-spacing:2px;text-transform:uppercase;color:var(--fog);border-bottom:1px solid var(--line)}
+tbody tr{border-bottom:1px solid var(--line);animation:ri .26s ease both}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+@keyframes ri{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+td{padding:13px 14px;vertical-align:middle}
+
+.ln{font-weight:700;font-size:14px;color:#fff}
+.la{font-size:11px;color:var(--fog);margin-top:2px}
+.le{color:var(--gold);font-size:12px}
+.lp{color:var(--fog);font-size:11px;margin-top:2px}
+
+.sc{display:inline-flex;align-items:center;justify-content:center;
+  font-family:'Bebas Neue',sans-serif;font-size:15px;
+  width:36px;height:36px;border-radius:7px;border:1px solid}
+.hi{background:rgba(233,69,96,.15);color:var(--fire);border-color:rgba(233,69,96,.3)}
+.md{background:rgba(245,166,35,.15);color:var(--gold);border-color:rgba(245,166,35,.3)}
+.lo{background:rgba(16,185,129,.15);color:var(--green);border-color:rgba(16,185,129,.3)}
+
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.btn{background:transparent;border:1px solid var(--line);color:var(--fog);border-radius:6px;
+  padding:6px 11px;font-size:11px;font-family:'Barlow',sans-serif;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn:hover{border-color:var(--fire);color:var(--fire)}
+.btn.pr{border-color:var(--fire);color:var(--fire)}
+.btn.ok{border-color:var(--green);color:var(--green);cursor:default}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  z-index:100;display:none;align-items:center;justify-content:center;padding:20px}
+.overlay.show{display:flex}
+.modal{background:var(--ink2);border:1px solid var(--line);border-radius:14px;
+  padding:30px;width:100%;max-width:420px;animation:mi .22s ease}
+@keyframes mi{from{opacity:0;transform:scale(.95) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal h2{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;margin-bottom:4px}
+.ms{font-size:13px;color:var(--fog);margin-bottom:20px}
+.mr{margin-bottom:12px}
+.ml{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--fog);margin-bottom:4px}
+.mv{font-size:14px;color:#fff}
+.mbs{display:flex;gap:10px;margin-top:22px;justify-content:flex-end}
+.bc{background:transparent;border:1px solid var(--line);color:var(--fog);border-radius:7px;
+  padding:9px 18px;font-size:13px;font-family:'Barlow',sans-serif;cursor:pointer}
+.bk{background:linear-gradient(135deg,var(--fire),var(--gold));color:#fff;border:none;
+  border-radius:7px;padding:9px 22px;font-size:13px;font-family:'Barlow',sans-serif;font-weight:600;cursor:pointer}
+.bk:disabled{opacity:.5;cursor:wait}
+
+#toasts{position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:9px;z-index:200}
+.toast{padding:11px 17px;border-radius:8px;font-size:13px;font-weight:500;color:#fff;
+  min-width:250px;box-shadow:0 4px 18px rgba(0,0,0,.4);animation:ti .24s ease}
+@keyframes ti{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+.toast.ok{background:rgba(16,185,129,.92);border-left:3px solid var(--green)}
+.toast.er{background:rgba(233,69,96,.92);border-left:3px solid var(--fire)}
+.toast.in{background:rgba(59,130,246,.92);border-left:3px solid #3b82f6}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Ace <span>Digitals</span> Global</div>
+  <div class="pill">Lead Intelligence</div>
+</header>
+
+<div class="hero">
+  <div class="hero-tag">Automated Outreach System</div>
+  <h1>Find Leads.<br><em>Generate Reports.</em><br>Close Clients.</h1>
+  <p>Finds businesses with no website but a reachable email, generates a premium audit PDF, and sends targeted outreach — all from this page.</p>
+</div>
+
+<div class="wrap">
+  <div class="search-card">
+    <div class="fg">
+      <label>Service / Niche</label>
+      <input type="text" id="svc" placeholder="e.g. dentist, plumber, salon">
+    </div>
+    <div class="fg">
+      <label>City / Location</label>
+      <input type="text" id="loc" placeholder="e.g. Lagos, Nigeria">
+    </div>
+    <button class="btn-go" id="go" onclick="startSearch()">FIND LEADS</button>
+  </div>
+
+  <div style="max-width:760px;margin:0 auto">
+    <div class="prog-wrap"><div class="prog" id="prog"></div></div>
+    <div id="msg">Enter a service and location above to begin.</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-v f" id="s1">0</div><div class="stat-l">Leads Found</div></div>
+    <div class="stat"><div class="stat-v" id="s2">0</div><div class="stat-l">PDFs Ready</div></div>
+    <div class="stat"><div class="stat-v" id="s3">0</div><div class="stat-l">Emails Sent</div></div>
+    <div class="stat"><div class="stat-v" id="s4">--</div><div class="stat-l">Avg Score</div></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-hdr">
+      <div class="sec-title">Qualified Leads</div>
+      <div class="sec-ct" id="ct">No leads yet</div>
+    </div>
+    <div class="tbl-shell" id="tbl">
+      <div class="empty">
+        <div class="ei">[ ]</div>
+        <div class="et">No leads yet</div>
+        <div style="font-size:13px;color:#444">Run a search above to begin.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="modal">
+  <div class="modal">
+    <h2>Send Audit Report</h2>
+    <div class="ms">Confirm email delivery for this lead.</div>
+    <div class="mr"><div class="ml">Business</div><div class="mv" id="mn">--</div></div>
+    <div class="mr"><div class="ml">Sending to</div><div class="mv" style="color:var(--gold)" id="me">--</div></div>
+    <div class="mr"><div class="ml">Owner copy</div><div class="mv" style="color:var(--fog)">jobhauntgithub@gmail.com</div></div>
+    <div class="mbs">
+      <button class="bc" onclick="closeModal()">Cancel</button>
+      <button class="bk" id="bk" onclick="confirmSend()">Send Report</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+// ── STATE ────────────────────────────────────────────────────────
+let leads = [], pdfs = {}, sent = new Set(), emailsSent = 0, pdfCount = 0;
+let pending = null;
+
+// ── SEARCH ───────────────────────────────────────────────────────
+async function startSearch() {
+  const svc = document.getElementById('svc').value.trim();
+  const loc = document.getElementById('loc').value.trim();
+  if (!svc || !loc) { toast('Please fill in both fields.', 'er'); return; }
+
+  setBusy(true);
+  leads = []; pdfs = {}; sent.clear(); emailsSent = 0; pdfCount = 0;
+  renderTable(); updateStats();
+  setMsg('Searching for "' + svc + '" in "' + loc + '"...', true);
+
+  try {
+    const res = await fetch('/search', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ service: svc, location: loc }),
+    });
+    if (!res.ok) {
+      const e = await res.json().catch(() => ({ error: 'Server error ' + res.status }));
+      throw new Error(e.error || 'Search failed');
+    }
+    const data = await res.json();
+    leads = data.leads || [];
+
+    if (!leads.length) {
+      setMsg('No qualifying leads found. Try a different niche or city.', false);
+      toast('No leads found for this search.', 'in');
+    } else {
+      setMsg('Found ' + leads.length + ' lead' + (leads.length!==1?'s':'') + '. Generating PDFs...', true);
+      for (const lead of leads) {
+        try { pdfs[lead.id] = await buildPDF(lead); pdfCount++; }
+        catch(e) { console.warn('PDF failed for', lead.name, e); }
+      }
+      setMsg(leads.length + ' leads found. ' + pdfCount + ' PDFs ready.', false);
+      toast(leads.length + ' leads found!', 'ok');
+    }
+    renderTable(); updateStats();
+  } catch(err) {
+    setMsg('Error: ' + err.message, false);
+    toast(err.message, 'er');
+  } finally { setBusy(false); }
+}
+
+// ── PDF — NO EMOJI, clean text only ──────────────────────────────
+async function buildPDF(lead) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const W = 210, H = 297, M = 14;
+
+  const date  = new Date(lead.date).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const aLost = Math.round((lead.reviews < 5 ? 20 : 10) * 150) * 12;
+
+  // Colours as RGB arrays
+  const DARK  = [26,26,46];
+  const NAVY  = [15,52,96];
+  const RED   = [233,69,96];
+  const GOLD  = [245,166,35];
+  const WHITE = [255,255,255];
+  const LIGHT = [240,242,248];
+  const MUTED = [107,114,128];
+  const DGRAY = [68,68,68];
+
+  const sf = (...c) => doc.setFillColor(...c);
+  const st = (...c) => doc.setTextColor(...c);
+  const fs = (s)    => doc.setFontSize(s);
+  const ff = (f)    => doc.setFont('helvetica', f);
+
+  // Truncate text to fit a pixel width (in mm)
+  function clip(text, maxW) {
+    const lines = doc.splitTextToSize(String(text||''), maxW);
+    return lines[0] || '';
+  }
+
+  function footer() {
+    sf(...DARK); doc.rect(0, H-10, W, 10, 'F');
+    st(...[90,112,144]); fs(7); ff('normal');
+    doc.text('Ace Digitals Global  |  jobhauntgithub@gmail.com  |  +1 873 352 2008  |  acedigitalsempire.com',
+      W/2, H-3.5, {align:'center'});
+  }
+
+  function wm() {
+    doc.saveGraphicsState();
+    doc.setGState(new doc.GState({opacity:0.03}));
+    st(0,0,0); fs(52); ff('bold');
+    doc.text('ACE DIGITALS GLOBAL', W/2, H/2, {align:'center', angle:30});
+    doc.restoreGraphicsState();
+  }
+
+  function pageHdr(tag, title, pg) {
+    sf(...DARK); doc.rect(0,0,W,30,'F');
+    st(200,200,200); fs(7); ff('normal');
+    doc.text('ACE DIGITALS GLOBAL', M, 8);
+    doc.text('PAGE ' + pg + ' OF 8', W-M, 8, {align:'right'});
+    sf(...RED); doc.rect(M, 12, 10, 1.2, 'F');
+    st(...RED); fs(8); ff('bold'); doc.text(tag, M, 18);
+    st(...WHITE); fs(17); ff('bold'); doc.text(title, M, 27);
+  }
+
+  // ── PAGE 1: COVER ─────────────────────────────────────────────
+  sf(...NAVY); doc.rect(0,0,W,H,'F');
+  sf(...DARK); doc.rect(0,H*0.5,W,H*0.5,'F');
+  // accent
+  sf(...RED); doc.triangle(W-40,0,W,0,W,40,'F');
+  // date & brand
+  st(200,200,200); fs(8); ff('normal'); doc.text(date, M, 13);
+  st(...WHITE); fs(13); ff('bold'); doc.text('ACE DIGITALS GLOBAL', M, 23);
+  // badge
+  sf(...RED); doc.roundedRect(M, H-90, 72, 7, 1.5, 1.5, 'F');
+  st(...WHITE); fs(6.5); ff('bold'); doc.text('FREE GROWTH INTELLIGENCE REPORT', M+4, H-85);
+  // headline
+  st(...WHITE); fs(34); ff('bold');
+  doc.text('Your Business', M, H-75);
+  doc.text('Is Losing Customers', M, H-60);
+  st(...RED); doc.text('Every Single Day.', M, H-45);
+  // sub
+  st(160,180,208); fs(10); ff('normal');
+  doc.text("Here's the data and how to fix it.", M, H-34);
+  // business name (clipped to fit)
+  sf(...RED); doc.rect(M-2, H-27, 2, 17, 'F');
+  st(...GOLD); fs(12); ff('bold');
+  doc.text(clip(lead.name, W-M*2-10), M+3, H-23);
+  st(160,180,208); fs(9); ff('normal');
+  doc.text(clip((lead.address||lead.location), W-M*2-10), M+3, H-15);
+  // score
+  st(...RED); fs(20); ff('bold'); doc.text(String(lead.score), M+3, H-5);
+  st(160,180,208); fs(7); ff('normal'); doc.text('/35 OPP SCORE', M+14, H-7);
+  footer(); wm();
+
+  // ── PAGE 2: EXECUTIVE SUMMARY ─────────────────────────────────
+  doc.addPage();
+  sf(249,250,252); doc.rect(0,0,W,H,'F');
+  pageHdr('EXECUTIVE SUMMARY','Executive Summary','2');
+  wm();
+  let y = 36;
+
+  const cards = [
+    {l:'Business',      v:clip(lead.name,55),                    d:false},
+    {l:'Location',      v:clip(lead.location,55),                d:false},
+    {l:'Rating',        v:lead.rating>0 ? lead.rating+' stars':'Not Listed', d:lead.rating>0&&lead.rating<4.2},
+    {l:'Reviews',       v:String(lead.reviews),                  d:lead.reviews<10},
+    {l:'Website',       v:'NONE',                                d:true},
+    {l:'Opp. Score',    v:lead.score+'/35',                      d:true},
+  ];
+  const cW = (W-M*2-8)/2;
+  cards.forEach((c,i) => {
+    const cx = M + (i%2)*(cW+8);
+    const cy = y + Math.floor(i/2)*24;
+    sf(...LIGHT); doc.roundedRect(cx,cy,cW,20,2,2,'F');
+    sf(...RED);   doc.rect(cx,cy,1.5,20,'F');
+    st(...MUTED); fs(7); ff('bold');
+    doc.text(c.l.toUpperCase(), cx+5, cy+7);
+    st(...(c.d ? RED : DARK)); fs(11); ff('bold');
+    doc.text(c.v, cx+5, cy+15);
+  });
+  y += 3*24 + 8;
+
+  // intro box
+  sf(255,248,240); doc.roundedRect(M,y,W-M*2,30,3,3,'F');
+  sf(...GOLD); doc.rect(M,y,1.5,30,'F');
+  st(...DGRAY); fs(9); ff('normal');
+  const intro = lead.name + ' has no website in ' + lead.location + '. With only ' + lead.reviews +
+    ' Google reviews' + (lead.rating>0 ? ' and a '+lead.rating+' star rating':'') +
+    ', significant revenue is lost daily to competitors. This report delivers a full audit, competitive analysis, revenue impact, and a 30-day plan.';
+  doc.text(doc.splitTextToSize(intro, W-M*2-8).slice(0,3), M+5, y+8, {lineHeightFactor:1.5});
+  y += 36;
+
+  // score bar
+  st(...MUTED); fs(9); ff('normal');
+  doc.text('Opportunity Score: ' + lead.score + '/35  --  HIGH PRIORITY', M, y);
+  y += 5;
+  sf(...LIGHT); doc.roundedRect(M,y,W-M*2,4,2,2,'F');
+  sf(...RED);   doc.roundedRect(M,y,(W-M*2)*(lead.score/35),4,2,2,'F');
+  footer();
+
+  // ── PAGE 3: PRESENCE AUDIT ────────────────────────────────────
+  doc.addPage();
+  sf(249,250,252); doc.rect(0,0,W,H,'F');
+  pageHdr('PRESENCE AUDIT','Digital Presence Audit','3');
+  wm();
+
+  const rows = [
+    {c:'Business Website',        s:'MISSING',   b:true,  i:'No 24/7 sales presence'},
+    {c:'Google Business Profile', s:lead.rating>0?'PARTIAL':'WEAK', b:true, i:'Low local search visibility'},
+    {c:'Google Reviews',          s:lead.reviews+' reviews', b:true, i:lead.reviews<10?'Below trust threshold':'Low review volume'},
+    {c:'Online Booking',          s:'NONE',      b:true,  i:'Losing 60%+ of customers'},
+    {c:'SEO / Search',            s:'ZERO',      b:true,  i:'Invisible to 97% who search first'},
+    {c:'Social Media',            s:'UNKNOWN',   b:false, i:'Missing brand presence'},
+    {c:'Review Management',       s:'NONE',      b:true,  i:'No system to generate reviews'},
+    {c:'Mobile Presence',         s:'NONE',      b:true,  i:'76% of searches are mobile'},
+  ];
+  let ty = 35;
+  sf(...DARK); doc.rect(M,ty,W-M*2,8,'F');
+  st(...WHITE); fs(7.5); ff('bold');
+  doc.text('CHANNEL', M+3, ty+5.5);
+  doc.text('STATUS', M+68, ty+5.5);
+  doc.text('IMPACT', M+112, ty+5.5);
+
+  rows.forEach((r,i) => {
+    const ry = ty+8+i*14;
+    sf(...(i%2===0?WHITE:LIGHT)); doc.rect(M,ry,W-M*2,14,'F');
+    st(...DARK); fs(9); ff('bold');
+    doc.text(clip(r.c, 60), M+3, ry+9);
+    // status badge
+    sf(...(r.b?[254,242,242]:[255,248,240]));
+    doc.roundedRect(M+67,ry+2,38,8,1,1,'F');
+    st(...(r.b?RED:GOLD)); fs(7.5); ff('bold');
+    doc.text(r.s, M+69, ry+7.8);
+    st(...MUTED); fs(8); ff('normal');
+    doc.text(clip(r.i, W-M-115), M+112, ry+9);
+  });
+  footer();
+
+  // ── PAGE 4: COMPETITORS ───────────────────────────────────────
+  doc.addPage();
+  sf(249,250,252); doc.rect(0,0,W,H,'F');
+  pageHdr('COMPETITION','Competitive Landscape','4');
+  wm();
+  y = 36;
+
+  sf(...LIGHT); doc.roundedRect(M,y,W-M*2,18,3,3,'F');
+  st(...DGRAY); fs(9); ff('normal');
+  const ci = 'While ' + lead.name + ' has no website, competitors in ' + lead.location +
+    ' are capturing customers online every day you wait.';
+  doc.text(doc.splitTextToSize(ci, W-M*2-6).slice(0,2), M+4, y+7, {lineHeightFactor:1.5});
+  y += 22;
+
+  const comps = [
+    {n:'Top Local Competitor #1', a:'Website + 50+ Reviews'},
+    {n:'Top Local Competitor #2', a:'4.8 Stars + Online Booking'},
+    {n:'Top Local Competitor #3', a:'Active SEO + Google Ads'},
+    {n:'Top Local Competitor #4', a:'Social Media + Modern Website'},
+  ];
+  comps.forEach((c,i) => {
+    sf(...(i%2===0?WHITE:LIGHT)); doc.rect(M,y+i*14,W-M*2,14,'F');
+    st(...DARK); fs(10); ff('bold'); doc.text(c.n, M+4, y+i*14+9.5);
+    st(...RED);  fs(9);  ff('bold'); doc.text(c.a, W-M-2, y+i*14+9.5, {align:'right'});
+  });
+  y += 4*14+10;
+
+  const hW = (W-M*2-8)/2;
+  // You (bad)
+  sf([254,242,242]); doc.roundedRect(M,y,hW,55,3,3,'F');
+  sf(...RED);       doc.roundedRect(M,y,hW,8,3,3,'F');
+  st(...WHITE); fs(8); ff('bold'); doc.text('YOU CURRENTLY', M+4, y+6);
+  ['No website',''+lead.reviews+' Google reviews','No online booking','Zero SEO','Mobile invisible'].forEach((p,i)=>{
+    st(...DGRAY); fs(8.5); ff('normal'); doc.text('- '+p, M+4, y+14+i*8);
+  });
+  // Where you should be
+  const gx = M+hW+8;
+  sf([240,253,244]); doc.roundedRect(gx,y,hW,55,3,3,'F');
+  sf([22,163,74]);   doc.roundedRect(gx,y,hW,8,3,3,'F');
+  st(...WHITE); fs(8); ff('bold'); doc.text('WHERE YOU SHOULD BE', gx+4, y+6);
+  ['Professional website','50+ five-star reviews','24/7 online booking','Page 1 ranking','Mobile first'].forEach((p,i)=>{
+    st(...DGRAY); fs(8.5); ff('normal'); doc.text('- '+p, gx+4, y+14+i*8);
+  });
+  footer();
+
+  // ── PAGE 5: LOST REVENUE ──────────────────────────────────────
+  doc.addPage();
+  sf(249,250,252); doc.rect(0,0,W,H,'F');
+  pageHdr('REVENUE IMPACT','Revenue Impact Analysis','5');
+  wm();
+
+  st(...RED); fs(52); ff('bold');
+  doc.text('$' + aLost.toLocaleString(), W/2, 62, {align:'center'});
+  st(...MUTED); fs(10); ff('normal');
+  doc.text('Estimated annual revenue lost to digital invisibility', W/2, 70, {align:'center'});
+
+  const mn = (W-M*2-16)/3;
+  [{v:'$'+Math.round(aLost/12).toLocaleString(),l:'Lost Per Month'},
+   {v:String(Math.round(aLost/12/150)),l:'Customers / Month'},
+   {v:'97%',l:'Search Online First'}
+  ].forEach((m,i)=>{
+    const mx = M+i*(mn+8);
+    sf(...LIGHT); doc.roundedRect(mx,77,mn,22,2,2,'F');
+    sf(...RED); doc.rect(mx,77,mn,1.5,'F');
+    st(...DARK); fs(16); ff('bold'); doc.text(m.v, mx+mn/2, 87, {align:'center'});
+    st(...MUTED); fs(7); ff('normal'); doc.text(m.l, mx+mn/2, 94, {align:'center'});
+  });
+
+  const bAW = W-M*2-28;
+  [{l:'No Website',p:.85,c:RED},{l:'No SEO',p:.75,c:DARK},{l:'Few Reviews',p:.60,c:GOLD}
+  ].forEach((b,i)=>{
+    const by = 107+i*16;
+    st(...DARK); fs(8.5); ff('bold'); doc.text(b.l, M, by+5);
+    sf(...LIGHT); doc.roundedRect(M+26,by,bAW,9,2,2,'F');
+    sf(...b.c); doc.roundedRect(M+26,by,bAW*b.p,9,2,2,'F');
+    st(...WHITE); fs(7); doc.text('-'+Math.round(b.p*100)+'%', M+26+bAW*b.p-10, by+6.5);
+  });
+  st(...MUTED); fs(7.5); ff('normal');
+  doc.text('* Estimates based on BrightLocal research and local service industry averages.', M, 160);
+  footer();
+
+  // ── PAGE 6: SOLUTION ──────────────────────────────────────────
+  doc.addPage();
+  sf(249,250,252); doc.rect(0,0,W,H,'F');
+  pageHdr('THE SOLUTION','The Solution: Ace Digitals Global','6');
+  wm();
+  st(...DGRAY); fs(9); ff('normal');
+  const si = 'Ace Digitals Global transforms local businesses like ' + lead.name +
+    ' into dominant online presences fast. Our system turns digital absence into a competitive advantage within 30 days.';
+  doc.text(doc.splitTextToSize(si, W-M*2).slice(0,2), M, 36, {lineHeightFactor:1.5});
+
+  const pkW = (W-M*2-16)/3;
+  [{n:'STARTER',p:'$497',r:'one-time',f:['5-page website','Google Business','Basic SEO','Mobile responsive','Contact form'],feat:false},
+   {n:'GROWTH', p:'$997',r:'one-time',f:['10-page website','Full GMB optimization','Local SEO','Review system','Online booking','3mo support'],feat:true},
+   {n:'DOMINATOR',p:'$1,997',r:'per month',f:['Everything in Growth','Google Ads mgmt','Social media','Monthly reports','Account manager'],feat:false}
+  ].forEach((pk,i)=>{
+    const px = M+i*(pkW+8), py = 47;
+    if(pk.feat){sf(...RED); doc.roundedRect(px-1,py-1,pkW+2,97,3,3,'F');}
+    sf(...WHITE); doc.roundedRect(px,py,pkW,95,2,2,'F');
+    sf(...(pk.feat?RED:DARK)); doc.roundedRect(px,py,pkW,18,2,2,'F');
+    if(pk.feat){
+      sf(...GOLD); doc.roundedRect(px+8,py-4,pkW-16,6,3,3,'F');
+      st(...DARK); fs(6); ff('bold'); doc.text('MOST POPULAR', px+pkW/2, py-0.5, {align:'center'});
+    }
+    st(...WHITE); fs(9); ff('bold'); doc.text(pk.n, px+pkW/2, py+9, {align:'center'});
+    st(...(pk.feat?WHITE:GOLD)); fs(16); ff('bold'); doc.text(pk.p, px+pkW/2, py+17, {align:'center'});
+    st(...MUTED); fs(7.5); ff('normal'); doc.text(pk.r, px+pkW/2, py+24, {align:'center'});
+    pk.f.forEach((f,fi)=>{
+      st(...DARK); fs(7.5); ff('normal'); doc.text('+ ' + f, px+4, py+31+fi*10);
+    });
+  });
+  footer();
+
+  // ── PAGE 7: QUICK WINS ────────────────────────────────────────
+  doc.addPage();
+  sf(249,250,252); doc.rect(0,0,W,H,'F');
+  pageHdr('ACTION PLAN','Your 30-Day Quick Win Plan','7');
+  wm();
+  st(...DGRAY); fs(9); ff('normal');
+  doc.text('What Ace Digitals Global does for ' + clip(lead.name, 80) + ' in the first 30 days:', M, 36);
+
+  [{n:'1',t:'Launch Your Professional Website',
+    d:'Mobile-first website live in 7 days. Custom design, your branding, calls-to-action that convert.',
+    tl:'Week 1  |  Target: +30% call volume'},
+   {n:'2',t:'Optimize Google Business Profile',
+    d:'Full GMB setup with categories, photos, services and posts. Enter Google 3-Pack results.',
+    tl:'Week 1-2  |  Target: 2x local visibility'},
+   {n:'3',t:'Launch Review Generation Campaign',
+    d:'Automated system to collect 5-star reviews. Go from ' + lead.reviews + ' to 30+ reviews in 30 days.',
+    tl:'Week 2  |  Target: +25% conversion rate'},
+   {n:'4',t:'Local SEO Foundation',
+    d:'Target top keywords your customers search. On-page SEO, local citations, schema markup.',
+    tl:'Week 3-4  |  Organic leads within 60 days'},
+  ].forEach((w,i)=>{
+    const wy = 42+i*55;
+    sf(...LIGHT); doc.roundedRect(M,wy,W-M*2,48,3,3,'F');
+    sf(...RED); doc.rect(M,wy,2,48,'F');
+    st(...RED); fs(22); ff('bold'); doc.text(w.n, M+5, wy+16);
+    st(...DARK); fs(11); ff('bold'); doc.text(w.t, M+18, wy+10);
+    st(...DGRAY); fs(8.5); ff('normal');
+    doc.text(doc.splitTextToSize(w.d, W-M*2-22).slice(0,2), M+18, wy+20, {lineHeightFactor:1.5});
+    st(...RED); fs(8); ff('bold'); doc.text(w.tl, M+18, wy+41);
+  });
+  footer();
+
+  // ── PAGE 8: CTA ───────────────────────────────────────────────
+  doc.addPage();
+  sf(...NAVY); doc.rect(0,0,W,H,'F');
+  sf(...DARK); doc.rect(0,H*0.55,W,H*0.45,'F');
+  wm();
+  st(...GOLD); fs(9); ff('bold');
+  doc.text('YOUR NEXT STEP', W/2, 55, {align:'center'});
+  st(...WHITE); fs(26); ff('bold');
+  doc.text('Ready to Stop Losing', W/2, 74, {align:'center'});
+  doc.text('Customers to Competitors?', W/2, 86, {align:'center'});
+  st(160,180,208); fs(10); ff('normal');
+  const cs = 'This free audit is your first step. Let\'s build a digital presence that works for ' +
+    clip(lead.name, 80) + ' starting this week.';
+  doc.text(doc.splitTextToSize(cs, 130), W/2, 101, {align:'center', lineHeightFactor:1.5});
+  sf(...RED); doc.rect(W/2-15, 116, 30, 1, 'F');
+  sf(...RED); doc.roundedRect(W/2-36, 124, 72, 14, 3, 3, 'F');
+  st(...WHITE); fs(10); ff('bold');
+  doc.text('Book Free Strategy Call', W/2, 133, {align:'center'});
+  [{l:'EMAIL',v:'jobhauntgithub@gmail.com'},{l:'PHONE',v:'+1 873 352 2008'},{l:'WEBSITE',v:'acedigitalsempire.com'}
+  ].forEach((c,i)=>{
+    const cw = (W-M*2)/3;
+    const cx = M+i*cw;
+    st([96,128,160]); fs(7); ff('bold'); doc.text(c.l, cx+cw/2, 150, {align:'center'});
+    st(...WHITE); fs(9); ff('normal'); doc.text(c.v, cx+cw/2, 158, {align:'center'});
+  });
+  sf(...DARK); doc.rect(0,H-10,W,10,'F');
+  st([90,112,144]); fs(7); ff('normal');
+  doc.text('Ace Digitals Global  |  jobhauntgithub@gmail.com  |  +1 873 352 2008  |  acedigitalsempire.com',
+    W/2, H-3.5, {align:'center'});
+
+  return doc.output('datauristring').split(',')[1];
+}
+
+// ── SEND EMAIL ───────────────────────────────────────────────────
+function openModal(id) {
+  pending = leads.find(l => l.id === id);
+  if (!pending) return;
+  document.getElementById('mn').textContent = pending.name;
+  document.getElementById('me').textContent = pending.email;
+  document.getElementById('bk').disabled = false;
+  document.getElementById('bk').textContent = 'Send Report';
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal() { document.getElementById('modal').classList.remove('show'); pending = null; }
+
+async function confirmSend() {
+  if (!pending) return;
+  const btn = document.getElementById('bk');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  try {
+    const res = await fetch('/send-email', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ lead: pending, pdfBase64: pdfs[pending.id]||null }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error||'Email failed');
+    sent.add(pending.id); emailsSent++;
+    updateStats(); renderTable();
+    toast('Report sent to ' + pending.email, 'ok');
+    closeModal();
+  } catch(err) {
+    toast(err.message, 'er');
+    btn.disabled = false; btn.textContent = 'Send Report';
+  }
+}
+
+function dlPDF(id) {
+  const lead = leads.find(l => l.id === id);
+  const b64  = pdfs[id];
+  if (!lead || !b64) { toast('PDF not ready.', 'in'); return; }
+  const a = document.createElement('a');
+  a.href = 'data:application/pdf;base64,' + b64;
+  a.download = lead.name.replace(/[^a-z0-9]/gi,'_') + '_Growth_Audit.pdf';
+  a.click();
+}
+
+// ── UI ────────────────────────────────────────────────────────────
+function renderTable() {
+  const tbl = document.getElementById('tbl');
+  document.getElementById('ct').textContent =
+    leads.length ? leads.length + ' lead' + (leads.length!==1?'s':'') : 'No leads yet';
+
+  if (!leads.length) {
+    tbl.innerHTML = '<div class="empty"><div class="ei">[ ]</div><div class="et">No leads yet</div><div style="font-size:13px;color:#444">Run a search above.</div></div>';
+    return;
+  }
+
+  const rows = leads.map((l,i) => {
+    const hp = !!pdfs[l.id], ws = sent.has(l.id);
+    const sc = l.score>=25?'hi':l.score>=15?'md':'lo';
+    return `<tr style="animation-delay:${i*.04}s">
+      <td><div class="ln">${esc(l.name)}</div><div class="la">${esc(l.address||l.location)}</div></td>
+      <td><div class="le">${esc(l.email)}</div><div class="lp">${l.phone?esc(l.phone):'--'}</div></td>
+      <td><div style="font-size:12px;color:var(--gold)">${l.rating>0?l.rating+' stars':'--'}</div>
+          <div style="font-size:11px;color:var(--fog)">${l.reviews} reviews</div></td>
+      <td><div class="sc ${sc}">${l.score}</div></td>
+      <td><div class="acts">
+        ${hp?`<button class="btn pr" onclick="dlPDF('${l.id}')">PDF</button>`:`<button class="btn" disabled>PDF</button>`}
+        <button class="btn ${ws?'ok':''}" onclick="${ws?'':``openModal('${l.id}')``}" ${ws?'disabled':''}>
+          ${ws?'Sent':'Send'}
+        </button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  tbl.innerHTML = `<table>
+    <thead><tr><th>Business</th><th>Contact</th><th>Rating</th><th>Score</th><th>Actions</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+function updateStats() {
+  document.getElementById('s1').textContent = leads.length;
+  document.getElementById('s2').textContent = Object.keys(pdfs).length;
+  document.getElementById('s3').textContent = emailsSent;
+  const sc = leads.map(l=>l.score);
+  document.getElementById('s4').textContent = sc.length ? (sc.reduce((a,b)=>a+b,0)/sc.length).toFixed(0) : '--';
+}
+function setBusy(on) {
+  const btn = document.getElementById('go'), p = document.getElementById('prog');
+  btn.disabled = on; btn.textContent = on ? 'SEARCHING...' : 'FIND LEADS';
+  on ? p.classList.add('run') : (p.classList.remove('run'), p.style.width='0');
+}
+function setMsg(m, on) {
+  const el = document.getElementById('msg');
+  el.textContent = m; el.className = on ? 'on' : '';
+}
+function toast(m, t='in') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + t; el.textContent = m;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 4500);
+}
+function esc(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key==='Enter' && !document.getElementById('go').disabled) startSearch();
+});
+</script>
+</body>
+</html>
